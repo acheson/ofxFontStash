@@ -455,43 +455,123 @@ ofVec2f ofxFontStash::drawMultiColumnFormatted(const string &_text, float size, 
 		ofTranslate(0, asc);
 	}
 
+	
+	
+
 	if (!dryrun) {
 		ofx_sth_begin_draw(stash);
 	}
 
-	for (int i=0; i<allWords.size(); i++) {
 
-		// do we need to jump a line?
-		if ((drawPointer.x + wordSizes[i].x > columnWidth ||
-			allWords[i] == "\n") &&
-			drawPointer.x != 0)
-		{
-			// jump one line down
-			drawPointer.y += lineHeight * size * wordScales[i];
-			drawPointer.x = 0;
+
+
+
+
+	bool rightJustified = true;
+
+	if (!rightJustified) {
+		// Default left aligned drawing
+		for (int i = 0; i<allWords.size(); i++) {
+
+			// do we need to jump a line?
+			if ((drawPointer.x + wordSizes[i].x > columnWidth ||
+				allWords[i] == "\n") &&
+				drawPointer.x != 0)
+			{
+				// jump one line down
+				drawPointer.y += lineHeight * size * wordScales[i];
+				drawPointer.x = 0;
+			}
+
+			// we need to flush the vertices if we change the color
+			if (!dryrun) {
+				if (wordColors[i] != ofGetStyle().color) {
+					ofx_sth_end_draw(stash);
+					ofx_sth_begin_draw(stash);
+
+					ofSetColor(wordColors[i]);
+				}
+			}
+
+			float dx = 0;
+			if (!dryrun) {
+				ofx_sth_draw_text(stash, wordFonts[i], size * wordScales[i], drawPointer.x, drawPointer.y, allWords[i].c_str(), &dx);
+			}
+			drawPointer.x += wordSizes[i].x;
+
+			// save maxX so we'll return the size
+			if (drawPointer.x > maxX) {
+				maxX = drawPointer.x;
+			}
+		}
+	}
+	else {
+		// Right justified text
+
+		vector<int> lineWidths;
+		int lineNum = 0;
+		
+		// Do a dry run and determine all the widths
+		for (int i = 0; i<allWords.size(); i++) {
+
+			// do we need to jump a line?
+			if ((drawPointer.x + wordSizes[i].x > columnWidth ||
+				allWords[i] == "\n") &&
+				drawPointer.x != 0)
+			{
+				// New line is necessary, store line width
+				lineWidths.push_back(drawPointer.x);
+				lineNum++;
+
+				// jump one line down
+				drawPointer.y += lineHeight * size * wordScales[i];
+				drawPointer.x = 0;
+			}
+
+			drawPointer.x += wordSizes[i].x;
 		}
 
-		// we need to flush the vertices if we change the color
-		if (!dryrun) {
+		// Do the drawing routine
+		lineNum = 0;
+		for (int i = 0; i < allWords.size(); i++) {
+
+			// do we need to jump a line?
+			if ((drawPointer.x + wordSizes[i].x > columnWidth ||
+				allWords[i] == "\n") &&
+				drawPointer.x != 0)
+			{
+				// increment line num;
+				lineNum++;
+
+				// jump one line down
+				drawPointer.y += lineHeight * size * wordScales[i];
+				drawPointer.x = 0;
+			}
+
+			// we need to flush the vertices if we change the color
 			if (wordColors[i] != ofGetStyle().color) {
 				ofx_sth_end_draw(stash);
 				ofx_sth_begin_draw(stash);
 
 				ofSetColor(wordColors[i]);
 			}
+
+			float dx = 0;
+			if (lineNum < lineWidths.size()) {
+				int drawX = drawPointer.x - lineWidths[lineNum];
+				ofx_sth_draw_text(stash, wordFonts[i], size * wordScales[i], drawX, drawPointer.y, allWords[i].c_str(), &dx);
+			}
+			
+			drawPointer.x += wordSizes[i].x;
+
+			// save maxX so we'll return the size
+			if (drawPointer.x > maxX) {
+				maxX = drawPointer.x;
+			}
 		}
 
-		float dx = 0;
-		if (!dryrun) {
-			ofx_sth_draw_text( stash, wordFonts[i], size * wordScales[i], drawPointer.x, drawPointer.y, allWords[i].c_str(), &dx );
-		}
-		drawPointer.x += wordSizes[i].x;
-
-		// save maxX so we'll return the size
-		if (drawPointer.x > maxX) {
-			maxX = drawPointer.x;
-		}
 	}
+	
 
 	if (!dryrun) {
 		ofx_sth_end_draw(stash);
