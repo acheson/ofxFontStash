@@ -358,8 +358,7 @@ ofRectangle ofxFontStash::drawMultiLineColumn( string & _text, float size, float
 	return totalArea;
 }
 
-
-ofVec2f ofxFontStash::drawMultiColumnFormatted(const string &_text, float size, float columnWidth, bool topLeftAlign, bool dryrun){
+ofVec2f ofxFontStash::drawMultiColumnFormatted(const string &_text, float size, float columnWidth, bool topLeftAlign, bool dryrun, TextAlignment textAlign) {
 
 	float maxX=0;
 
@@ -455,21 +454,12 @@ ofVec2f ofxFontStash::drawMultiColumnFormatted(const string &_text, float size, 
 		ofTranslate(0, asc);
 	}
 
-	
-	
-
 	if (!dryrun) {
 		ofx_sth_begin_draw(stash);
 	}
 
 
-
-
-
-
-	bool rightJustified = true;
-
-	if (!rightJustified) {
+	if (textAlign == ALIGN_LEFT) {
 		// Default left aligned drawing
 		for (int i = 0; i<allWords.size(); i++) {
 
@@ -506,8 +496,9 @@ ofVec2f ofxFontStash::drawMultiColumnFormatted(const string &_text, float size, 
 		}
 	}
 	else {
-		// Right justified text
+		// ALIGN_RIGHT or ALIGN_CENTER
 
+		// Determine the width of each line of text
 		vector<int> lineWidths;
 		int lineNum = 0;
 		
@@ -523,16 +514,19 @@ ofVec2f ofxFontStash::drawMultiColumnFormatted(const string &_text, float size, 
 				lineWidths.push_back(drawPointer.x);
 				lineNum++;
 
-				// jump one line down
-				drawPointer.y += lineHeight * size * wordScales[i];
+				// move on to the next line down
 				drawPointer.x = 0;
 			}
 
 			drawPointer.x += wordSizes[i].x;
 		}
 
+
 		// Do the drawing routine
 		lineNum = 0;
+		drawPointer.x = 0;
+		drawPointer.y = 0;
+
 		for (int i = 0; i < allWords.size(); i++) {
 
 			// do we need to jump a line?
@@ -558,7 +552,14 @@ ofVec2f ofxFontStash::drawMultiColumnFormatted(const string &_text, float size, 
 
 			float dx = 0;
 			if (lineNum < lineWidths.size()) {
-				int drawX = drawPointer.x - lineWidths[lineNum];
+				int drawX;
+				if (textAlign == ALIGN_RIGHT) {
+					drawX = drawPointer.x - lineWidths[lineNum];
+				}
+				else if (textAlign == ALIGN_CENTER) {
+					drawX = drawPointer.x - lineWidths[lineNum] / 2;
+				}
+				
 				ofx_sth_draw_text(stash, wordFonts[i], size * wordScales[i], drawX, drawPointer.y, allWords[i].c_str(), &dx);
 			}
 			
@@ -569,9 +570,7 @@ ofVec2f ofxFontStash::drawMultiColumnFormatted(const string &_text, float size, 
 				maxX = drawPointer.x;
 			}
 		}
-
 	}
-	
 
 	if (!dryrun) {
 		ofx_sth_end_draw(stash);

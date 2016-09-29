@@ -43,6 +43,12 @@ extern "C" {
 	#include "stb_truetype.h"
 }
 
+enum TextAlignment {
+	ALIGN_LEFT,
+	ALIGN_RIGHT,
+	ALIGN_CENTER
+};
+
 class ofxFontStash{
 
 	public:
@@ -106,9 +112,7 @@ class ofxFontStash{
 		example 3: "the #0xff0000 red #0x000000 apple is on the @1 big @0 tree."
 		example 4: "this is %2.2 more than double %1 the size"
 **/
-
-		ofVec2f drawMultiColumnFormatted(const string &text, float size, float columnWidth, bool topLeftAlign = false, bool dryrun = false);
-
+		ofVec2f drawMultiColumnFormatted(const string &text, float size, float columnWidth, bool topLeftAlign = false, bool dryrun = false, TextAlignment = ALIGN_LEFT);
 
 		float getFontHeight(float fontSize);
 
