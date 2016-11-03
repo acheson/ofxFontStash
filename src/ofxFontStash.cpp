@@ -599,7 +599,7 @@ ofVec2f ofxFontStash::drawMultiColumnFormatted(const string &_text, float size, 
 		ofPopMatrix();
 	}
 
-	return ofVec2f(maxX, drawPointer.y - (lineHeight * size / dpiScale - asc));
+	return ofVec2f(maxX, drawPointer.y);// -(lineHeight * size / dpiScale - asc));
 }
 
 
