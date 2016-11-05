@@ -377,7 +377,7 @@ ofRectangle ofxFontStash::drawMultiLineColumn( string & _text, float size, float
 	return totalArea;
 }
 
-ofVec2f ofxFontStash::drawMultiColumnFormatted(const string &_text, float size, float columnWidth, bool topLeftAlign, bool dryrun, TextAlignment textAlign) {
+ofVec2f ofxFontStash::drawMultiColumnFormatted(const string &_text, float size, float columnWidth, float alpha, bool topLeftAlign, bool dryrun, TextAlignment textAlign) {
 
 	float maxX=0;
 
@@ -498,7 +498,7 @@ ofVec2f ofxFontStash::drawMultiColumnFormatted(const string &_text, float size, 
 					ofx_sth_end_draw(stash);
 					ofx_sth_begin_draw(stash);
 
-					ofSetColor(wordColors[i]);
+					ofSetColor(wordColors[i], alpha);
 				}
 			}
 
@@ -566,7 +566,7 @@ ofVec2f ofxFontStash::drawMultiColumnFormatted(const string &_text, float size, 
 				ofx_sth_end_draw(stash);
 				ofx_sth_begin_draw(stash);
 
-				ofSetColor(wordColors[i]);
+				ofSetColor(wordColors[i], alpha);
 			}
 
 			float dx = 0;

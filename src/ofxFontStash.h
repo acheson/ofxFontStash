@@ -120,7 +120,7 @@ class ofxFontStash{
 		example 3: "the #0xff0000 red #0x000000 apple is on the @1 big @0 tree."
 		example 4: "this is %2.2 more than double %1 the size"
 **/
-		ofVec2f drawMultiColumnFormatted(const string &text, float size, float columnWidth, bool topLeftAlign = false, bool dryrun = false, TextAlignment = ALIGN_LEFT);
+		ofVec2f drawMultiColumnFormatted(const string &text, float size, float columnWidth, float alpha = 255.0f, bool topLeftAlign = false, bool dryrun = false, TextAlignment = ALIGN_LEFT);
 
 		float getFontHeight(float fontSize);
 
